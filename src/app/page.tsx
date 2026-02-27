@@ -9,25 +9,19 @@ export default function HomePage() {
   const [status, setStatus] = useState("Checking connection...")
 
   useEffect(() => {
-    async function testConnection() {
-      try {
-        // Simple Supabase query test
-        const { data, error } = await supabase
-          .from("pg_tables")
-          .select("*")
-          .limit(1)
+    async function testDB() {
+      const { data, error } = await supabase
+        .from("actions")
+        .select("*")
 
-        if (error) {
-          setStatus("Supabase connected but no tables yet")
-        } else {
-          setStatus("Supabase connected successfully ✅")
-        }
-      } catch (err) {
-        setStatus("Connection failed ❌")
+      if (error) {
+        setStatus("DB connected but actions table empty")
+      } else {
+        setStatus("DB connected and tables ready ✅")
       }
     }
 
-    testConnection()
+    testDB()
   }, [])
 
   return (
