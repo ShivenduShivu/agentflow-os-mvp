@@ -4,68 +4,72 @@ import { useEffect } from "react"
 import { supabase } from "@/lib/supabase"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-
+import Link from "next/link"
 export default function DashboardLayout({
-  children,
+    children,
 }: {
-  children: React.ReactNode
+    children: React.ReactNode
 }) {
-  const router = useRouter()
+    const router = useRouter()
 
-  useEffect(() => {
-    async function checkAuth() {
-      const { data } = await supabase.auth.getSession()
+    useEffect(() => {
+        async function checkAuth() {
+            const { data } = await supabase.auth.getSession()
 
-      if (!data.session) {
-        router.replace("/login")
-      }
+            if (!data.session) {
+                router.replace("/login")
+            }
+        }
+
+        checkAuth()
+    }, [router])
+
+    async function handleLogout() {
+        await supabase.auth.signOut()
+        router.push("/login")
     }
 
-    checkAuth()
-  }, [router])
+    return (
+        <div className="flex min-h-screen bg-slate-100">
+            {/* Sidebar */}
+            <aside className="w-64 bg-white border-r p-4 space-y-4">
+                <h2 className="text-xl font-bold">AgentFlow</h2>
+                
+                <nav className="space-y-2 text-sm">
+                    <Link href="/" className="block p-2 rounded hover:bg-slate-100">
+                        Dashboard
+                    </Link>
 
-  async function handleLogout() {
-    await supabase.auth.signOut()
-    router.push("/login")
-  }
+                    <Link href="/actions" className="block p-2 rounded hover:bg-slate-100">
+                        Actions
+                    </Link>
 
-  return (
-    <div className="flex min-h-screen bg-slate-100">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r p-4 space-y-4">
-        <h2 className="text-xl font-bold">AgentFlow</h2>
+                    <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
+                        Workflows
+                    </div>
 
-        <nav className="space-y-2 text-sm">
-          <div className="p-2 rounded bg-slate-100">
-            Dashboard
-          </div>
-          <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
-            Actions
-          </div>
-          <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
-            Workflows
-          </div>
-          <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
-            Approvals
-          </div>
-          <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
-            Audit Logs
-          </div>
-        </nav>
+                    <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
+                        Approvals
+                    </div>
 
-        <Button
-          variant="outline"
-          className="w-full"
-          onClick={handleLogout}
-        >
-          Logout
-        </Button>
-      </aside>
+                    <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
+                        Audit Logs
+                    </div>
+                </nav>
 
-      {/* Main Content */}
-      <main className="flex-1 p-6">
-        {children}
-      </main>
-    </div>
-  )
+                <Button
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleLogout}
+                >
+                    Logout
+                </Button>
+            </aside>
+
+            {/* Main Content */}
+            <main className="flex-1 p-6">
+                {children}
+            </main>
+        </div>
+    )
 }
