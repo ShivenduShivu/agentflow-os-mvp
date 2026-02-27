@@ -9,19 +9,17 @@ export default function HomePage() {
   const [status, setStatus] = useState("Checking connection...")
 
   useEffect(() => {
-    async function testDB() {
-      const { data, error } = await supabase
-        .from("actions")
-        .select("*")
+    async function checkSession() {
+      const { data } = await supabase.auth.getSession()
 
-      if (error) {
-        setStatus("DB connected but actions table empty")
+      if (data.session) {
+        setStatus("User logged in ✅")
       } else {
-        setStatus("DB connected and tables ready ✅")
+        setStatus("No active session")
       }
     }
 
-    testDB()
+    checkSession()
   }, [])
 
   return (
