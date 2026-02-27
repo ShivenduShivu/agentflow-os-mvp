@@ -7,66 +7,77 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
 export default function AuthForm({
-  mode,
+    mode,
 }: {
-  mode: "login" | "signup"
+    mode: "login" | "signup"
 }) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [message, setMessage] = useState("")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [message, setMessage] = useState("")
 
-  async function handleAuth() {
-    setMessage("Processing...")
+    async function handleAuth() {
+        setMessage("Processing...")
 
-    if (mode === "signup") {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-      })
+        if (mode === "signup") {
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+            })
 
-      if (error) setMessage(error.message)
-      else setMessage("Signup successful. Check email.")
+            if (error) {
+                setMessage(error.message)
+                return
+            }
+
+            if (data.user) {
+                await supabase.from("profiles").insert({
+                    id: data.user.id,
+                    role: "user",
+                })
+            }
+
+            setMessage("Signup successful. Check email.")
+        }
+
+        if (mode === "login") {
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            })
+
+            if (error) setMessage(error.message)
+            else setMessage("Login successful ✅")
+        }
     }
 
-    if (mode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
+    return (
+        <Card className="w-[400px]">
+            <CardContent className="p-6 space-y-4">
+                <h2 className="text-xl font-semibold">
+                    {mode === "login" ? "Login" : "Sign Up"}
+                </h2>
 
-      if (error) setMessage(error.message)
-      else setMessage("Login successful ✅")
-    }
-  }
+                <Input
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
-  return (
-    <Card className="w-[400px]">
-      <CardContent className="p-6 space-y-4">
-        <h2 className="text-xl font-semibold">
-          {mode === "login" ? "Login" : "Sign Up"}
-        </h2>
+                <Input
+                    placeholder="Password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
 
-        <Input
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+                <Button className="w-full" onClick={handleAuth}>
+                    {mode === "login" ? "Login" : "Create Account"}
+                </Button>
 
-        <Input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <Button className="w-full" onClick={handleAuth}>
-          {mode === "login" ? "Login" : "Create Account"}
-        </Button>
-
-        <div className="text-sm text-slate-600">
-          {message}
-        </div>
-      </CardContent>
-    </Card>
-  )
+                <div className="text-sm text-slate-600">
+                    {message}
+                </div>
+            </CardContent>
+        </Card>
+    )
 }

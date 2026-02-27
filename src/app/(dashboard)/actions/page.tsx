@@ -58,6 +58,7 @@ export default function ActionsPage() {
                     {actions.map((a) => (
                         <ActionCard
                             key={a.id}
+                            id={a.id}
                             name={a.name}
                             description={a.description}
                             cost={a.cost_estimate}
