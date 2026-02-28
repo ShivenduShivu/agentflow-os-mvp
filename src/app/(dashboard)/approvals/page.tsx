@@ -13,12 +13,43 @@ type Workflow = {
 }
 
 export default function ApprovalsPage() {
+  const [role, setRole] = useState<string | null>(null)
+  const [loadingRole, setLoadingRole] = useState(true)
+
   const [workflows, setWorkflows] = useState<Workflow[]>([])
   const [selected, setSelected] = useState<Workflow | null>(null)
 
   useEffect(() => {
-    load()
+    loadRole()
   }, [])
+
+  useEffect(() => {
+    if (role === "admin") {
+      load()
+    }
+  }, [role])
+
+  // 🔐 load user role from DB
+  async function loadRole() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      setRole("user")
+      setLoadingRole(false)
+      return
+    }
+
+    const { data } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .single()
+
+    setRole(data?.role ?? "user")
+    setLoadingRole(false)
+  }
 
   async function load() {
     const { data, error } = await supabase
@@ -50,7 +81,10 @@ export default function ApprovalsPage() {
     setWorkflows(normalized)
   }
 
+  // 🔐 approve restricted to admin
   async function approve(id: string) {
+    if (role !== "admin") return
+
     await supabase
       .from("workflows")
       .update({ status: "pending" })
@@ -60,7 +94,10 @@ export default function ApprovalsPage() {
     setSelected(null)
   }
 
+  // 🔐 reject restricted to admin
   async function reject(id: string) {
+    if (role !== "admin") return
+
     await supabase
       .from("workflows")
       .update({ status: "rejected" })
@@ -68,6 +105,16 @@ export default function ApprovalsPage() {
 
     setWorkflows(prev => prev.filter(w => w.id !== id))
     setSelected(null)
+  }
+
+  // ⏳ role loading state
+  if (loadingRole) {
+    return <div>Loading...</div>
+  }
+
+  // 🚫 non-admin blocked
+  if (role !== "admin") {
+    return <div className="text-red-600">Forbidden</div>
   }
 
   return (
