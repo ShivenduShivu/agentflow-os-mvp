@@ -11,10 +11,17 @@ type Workflow = {
   created_at: string
 }
 
+type Trace = {
+  message: string
+  created_at: string
+}
+
 export default function WorkflowDetailPage() {
   const { id } = useParams()
   const [workflow, setWorkflow] = useState<Workflow | null>(null)
-  const [trace, setTrace] = useState<any[]>([])
+  const [trace, setTrace] = useState<Trace[]>([])
+  const [duration, setDuration] = useState<number | null>(null)
+  const [cost, setCost] = useState<number | null>(null)
 
   useEffect(() => {
     if (!id) return
@@ -26,13 +33,12 @@ export default function WorkflowDetailPage() {
       .from("workflows")
       .select("*")
       .eq("id", workflowId)
-      .maybeSingle()   // ✅ prevents 406
+      .maybeSingle()
 
     if (!data) return
 
     setWorkflow(data)
 
-    // 🔒 ATOMIC START — safe + silent if already started
     if (data.status === "pending") {
       const { data: updated } = await supabase
         .from("workflows")
@@ -40,7 +46,7 @@ export default function WorkflowDetailPage() {
         .eq("id", workflowId)
         .eq("status", "pending")
         .select()
-        .maybeSingle()   // ✅ prevents 406
+        .maybeSingle()
 
       if (updated) {
         startAgent(workflowId)
@@ -57,7 +63,21 @@ export default function WorkflowDetailPage() {
       .eq("workflow_id", workflowId)
       .order("created_at", { ascending: true })
 
-    setTrace(data || [])
+    const traces = data || []
+    setTrace(traces)
+
+    // 🧮 Calculate duration + cost
+    const start = traces.find(t => t.message === "Agent started")
+    const end = traces.find(t => t.message === "Workflow completed")
+
+    if (start && end) {
+      const startTime = new Date(start.created_at).getTime()
+      const endTime = new Date(end.created_at).getTime()
+      const seconds = (endTime - startTime) / 1000
+
+      setDuration(seconds)
+      setCost(seconds * 0.01)
+    }
   }
 
   async function startAgent(workflowId: string) {
@@ -88,6 +108,14 @@ export default function WorkflowDetailPage() {
         <div><b>ID:</b> {workflow.id}</div>
         <div><b>Status:</b> {workflow.status}</div>
         <div><b>Created:</b> {workflow.created_at}</div>
+
+        {duration !== null && (
+          <div><b>Duration:</b> {duration.toFixed(2)}s</div>
+        )}
+
+        {cost !== null && (
+          <div><b>Cost:</b> ${cost.toFixed(2)}</div>
+        )}
       </div>
 
       <h2 className="text-lg font-semibold mb-3">Execution Timeline</h2>
@@ -97,8 +125,8 @@ export default function WorkflowDetailPage() {
           <div className="text-gray-500">No events yet</div>
         ) : (
           <ul className="space-y-3">
-            {trace.map((t) => (
-              <li key={t.id} className="flex items-start gap-3">
+            {trace.map((t, i) => (
+              <li key={i} className="flex items-start gap-3">
                 <div className="w-2 h-2 mt-2 bg-blue-500 rounded-full" />
                 <div>
                   <div className="font-medium">{t.message}</div>
