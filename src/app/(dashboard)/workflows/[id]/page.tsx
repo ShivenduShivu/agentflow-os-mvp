@@ -25,7 +25,49 @@ export default function WorkflowDetailPage() {
 
   useEffect(() => {
     if (!id) return
-    loadWorkflow(id as string)
+
+    const workflowId = id as string
+
+    loadWorkflow(workflowId)
+
+    // 🔴 REALTIME: workflow status updates
+    const wfChannel = supabase
+      .channel(`workflow-${workflowId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "workflows",
+          filter: `id=eq.${workflowId}`,
+        },
+        () => {
+          loadWorkflow(workflowId)
+        }
+      )
+      .subscribe()
+
+    // 🔴 REALTIME: trace updates
+    const traceChannel = supabase
+      .channel(`trace-${workflowId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "workflow_traces",
+          filter: `workflow_id=eq.${workflowId}`,
+        },
+        () => {
+          loadTrace(workflowId)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(wfChannel)
+      supabase.removeChannel(traceChannel)
+    }
   }, [id])
 
   async function loadWorkflow(workflowId: string) {
