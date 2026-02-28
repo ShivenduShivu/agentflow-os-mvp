@@ -26,21 +26,21 @@ export default function WorkflowDetailPage() {
       .from("workflows")
       .select("*")
       .eq("id", workflowId)
-      .single()
+      .maybeSingle()   // ✅ prevents 406
 
     if (!data) return
 
     setWorkflow(data)
 
-    // 🔒 ATOMIC AGENT START (only once globally)
+    // 🔒 ATOMIC START — safe + silent if already started
     if (data.status === "pending") {
-      const { data: updated, error } = await supabase
+      const { data: updated } = await supabase
         .from("workflows")
         .update({ status: "running" })
         .eq("id", workflowId)
-        .eq("status", "pending") // ← CRITICAL GUARD
+        .eq("status", "pending")
         .select()
-        .single()
+        .maybeSingle()   // ✅ prevents 406
 
       if (updated) {
         startAgent(workflowId)
