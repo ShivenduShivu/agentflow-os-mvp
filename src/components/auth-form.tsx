@@ -30,8 +30,9 @@ export default function AuthForm({
             }
 
             if (data.user) {
-                await supabase.from("profiles").insert({
+                await supabase.from("users").insert({
                     id: data.user.id,
+                    email: data.user.email,
                     role: "user",
                 })
             }
