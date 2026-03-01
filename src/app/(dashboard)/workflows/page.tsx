@@ -84,57 +84,59 @@ export default function WorkflowsPage() {
     }
 
     return (
-        <div>
-            <h1 className="text-2xl font-semibold mb-6">Workflows</h1>
+        <div className="p-6 bg-gray-50 min-h-screen">
+            <div className="max-w-6xl mx-auto space-y-6">
+                <h1 className="text-2xl font-semibold text-gray-900">Workflows</h1>
 
-            <div className="bg-white rounded-xl shadow divide-y">
-                {workflows.length === 0 && (
-                    <div className="p-6 text-gray-500">No workflows yet</div>
-                )}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                    {workflows.length === 0 && (
+                        <div className="p-6 text-gray-500">No workflows yet</div>
+                    )}
 
-                {workflows.map(w => (
-                    <Link
-                        key={w.id}
-                        href={`/workflows/${w.id}`}
-                        className="block p-6 hover:bg-gray-50"
-                    >
-                        <div className="flex justify-between items-center">
+                    {workflows.map(w => (
+                        <Link
+                            key={w.id}
+                            href={`/workflows/${w.id}`}
+                            className="block p-6 hover:bg-gray-50 text-gray-700"
+                        >
+                            <div className="flex justify-between items-center">
 
-                            {/* LEFT */}
-                            <div>
-                                <div className="font-medium">
-                                    {w.action?.[0]?.name || "Unnamed action"}
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                    {new Date(w.created_at).toLocaleString()}
-                                </div>
-                            </div>
-
-                            {/* RIGHT METRICS */}
-                            <div className="flex gap-8 text-sm">
+                                {/* LEFT */}
                                 <div>
-                                    <div className="text-gray-500">Status</div>
-                                    <div className="font-medium">{w.status}</div>
-                                </div>
-
-                                <div>
-                                    <div className="text-gray-500">Duration</div>
-                                    <div className="font-medium">
-                                        {formatDuration(w.duration_ms)}
+                                    <div className="font-medium text-gray-900">
+                                        {w.action?.[0]?.name || "Unnamed action"}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                        {new Date(w.created_at).toLocaleString()}
                                     </div>
                                 </div>
 
-                                <div>
-                                    <div className="text-gray-500">Cost</div>
-                                    <div className="font-medium">
-                                        {formatCost(w.cost_usd)}
+                                {/* RIGHT METRICS */}
+                                <div className="flex gap-8 text-sm">
+                                    <div>
+                                        <div className="text-gray-500">Status</div>
+                                        <div className="font-medium">{w.status}</div>
+                                    </div>
+
+                                    <div>
+                                        <div className="text-gray-500">Duration</div>
+                                        <div className="font-medium">
+                                            {formatDuration(w.duration_ms)}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div className="text-gray-500">Cost</div>
+                                        <div className="font-medium">
+                                            {formatCost(w.cost_usd)}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                        </div>
-                    </Link>
-                ))}
+                            </div>
+                        </Link>
+                    ))}
+                </div>
             </div>
         </div>
     )

@@ -109,66 +109,68 @@ export default function ApprovalsPage() {
 
   // ⏳ role loading state
   if (loadingRole) {
-    return <div>Loading...</div>
+    return <div className="p-6 bg-gray-50 min-h-screen"><div className="max-w-6xl mx-auto">Loading...</div></div>
   }
 
   // 🚫 non-admin blocked
   if (role !== "admin") {
-    return <div className="text-red-600">Forbidden</div>
+    return <div className="p-6 bg-gray-50 min-h-screen"><div className="max-w-6xl mx-auto text-red-600">Forbidden</div></div>
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-6">Approval Queue</h1>
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <h1 className="text-2xl font-semibold text-gray-900">Approval Queue</h1>
 
-      <div className="bg-white rounded-xl shadow divide-y">
-        {workflows.length === 0 && (
-          <div className="p-6 text-gray-500">No approvals pending</div>
-        )}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+          {workflows.length === 0 && (
+            <div className="p-6 text-gray-500">No approvals pending</div>
+          )}
 
-        {workflows.map(w => (
-          <div
-            key={w.id}
-            className="p-6 hover:bg-gray-50 cursor-pointer"
-            onClick={() => setSelected(w)}
-          >
-            <div className="font-medium">
-              {w.action?.[0]?.name || "Unnamed action"}
-            </div>
-            <div className="text-xs text-gray-500">
-              {new Date(w.created_at).toLocaleString()}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {selected && (
-        <div className="mt-6 bg-white rounded-xl shadow p-6">
-          <h2 className="text-lg font-semibold mb-4">Approval Details</h2>
-
-          <div className="space-y-2 mb-6">
-            <div><b>Action:</b> {selected.action?.[0]?.name || "Unnamed action"}</div>
-            <div><b>Workflow ID:</b> {selected.id}</div>
-            <div><b>Created:</b> {new Date(selected.created_at).toLocaleString()}</div>
-          </div>
-
-          <div className="flex gap-3">
-            <button
-              onClick={() => approve(selected.id)}
-              className="bg-blue-600 text-white px-4 py-2 rounded"
+          {workflows.map(w => (
+            <div
+              key={w.id}
+              className="p-6 hover:bg-gray-50 cursor-pointer text-gray-700"
+              onClick={() => setSelected(w)}
             >
-              Approve
-            </button>
-
-            <button
-              onClick={() => reject(selected.id)}
-              className="bg-red-600 text-white px-4 py-2 rounded"
-            >
-              Reject
-            </button>
-          </div>
+              <div className="font-medium text-gray-900">
+                {w.action?.[0]?.name || "Unnamed action"}
+              </div>
+              <div className="text-xs text-gray-500">
+                {new Date(w.created_at).toLocaleString()}
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+
+        {selected && (
+          <div className="mt-6 bg-white rounded-xl shadow-sm p-6 border border-gray-200 text-gray-700">
+            <h2 className="text-lg font-semibold mb-4 text-gray-900">Approval Details</h2>
+
+            <div className="space-y-2 mb-6">
+              <div><b>Action:</b> {selected.action?.[0]?.name || "Unnamed action"}</div>
+              <div><b>Workflow ID:</b> {selected.id}</div>
+              <div><b>Created:</b> {new Date(selected.created_at).toLocaleString()}</div>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => approve(selected.id)}
+                className="bg-blue-600 text-white px-4 py-2 rounded"
+              >
+                Approve
+              </button>
+
+              <button
+                onClick={() => reject(selected.id)}
+                className="bg-red-600 text-white px-4 py-2 rounded"
+              >
+                Reject
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

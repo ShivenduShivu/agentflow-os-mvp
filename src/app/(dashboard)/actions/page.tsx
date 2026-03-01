@@ -36,36 +36,38 @@ export default function ActionsPage() {
     }, [])
 
     if (loading) {
-        return <div>Loading actions...</div>
+        return <div className="p-6 bg-gray-50 min-h-screen"><div className="max-w-6xl mx-auto">Loading actions...</div></div>
     }
 
     return (
-        <div>
-            <div className="flex items-center justify-between mb-4">
-                <h1 className="text-2xl font-bold">Actions</h1>
+        <div className="p-6 bg-gray-50 min-h-screen">
+            <div className="max-w-6xl mx-auto space-y-6">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-semibold text-gray-900">Actions</h1>
 
-                <Link href="/actions/new">
-                    <Button>Create Action</Button>
-                </Link>
+                    <Link href="/actions/new">
+                        <Button>Create Action</Button>
+                    </Link>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 text-gray-700">
+                    {actions.length === 0 ? (
+                        <div className="text-gray-500">No actions defined yet</div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {actions.map((a) => (
+                                <ActionCard
+                                    key={a.id}
+                                    id={a.id}
+                                    name={a.name}
+                                    description={a.description}
+                                    cost={a.cost_estimate}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
-
-            {actions.length === 0 ? (
-                <div className="text-slate-500">
-                    No actions defined yet
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {actions.map((a) => (
-                        <ActionCard
-                            key={a.id}
-                            id={a.id}
-                            name={a.name}
-                            description={a.description}
-                            cost={a.cost_estimate}
-                        />
-                    ))}
-                </div>
-            )}
         </div>
     )
 }
