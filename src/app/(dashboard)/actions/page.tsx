@@ -36,7 +36,11 @@ export default function ActionsPage() {
     }, [])
 
     if (loading) {
-        return <div className="p-6 bg-gray-50 min-h-screen"><div className="max-w-6xl mx-auto">Loading actions...</div></div>
+        return (
+            <div className="p-6 bg-gray-50 min-h-screen">
+                <div className="max-w-6xl mx-auto">Loading actions...</div>
+            </div>
+        )
     }
 
     return (
@@ -50,23 +54,23 @@ export default function ActionsPage() {
                     </Link>
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200 text-gray-700">
-                    {actions.length === 0 ? (
-                        <div className="text-gray-500">No actions defined yet</div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {actions.map((a) => (
-                                <ActionCard
-                                    key={a.id}
-                                    id={a.id}
-                                    name={a.name}
-                                    description={a.description}
-                                    cost={a.cost_estimate}
-                                />
-                            ))}
-                        </div>
-                    )}
-                </div>
+                {actions.length === 0 ? (
+                    <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center text-gray-500">
+                        No actions yet
+                    </div>
+                ) : (
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {actions.map((a) => (
+                            <ActionCard
+                                key={a.id}
+                                id={a.id}
+                                name={a.name}
+                                description={a.description}
+                                cost={a.cost_estimate}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     )
