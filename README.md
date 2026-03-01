@@ -1,36 +1,183 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 AgentFlow OS — Multi-Agent Governance & Orchestration Layer (MVP)
 
-## Getting Started
+<p align="center">
+  <img src="https://img.shields.io/badge/AgentFlow-OS-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js" />
+  <img src="https://img.shields.io/badge/Supabase-Realtime-green?style=for-the-badge&logo=supabase" />
+  <img src="https://img.shields.io/badge/TypeScript-Strict-blue?style=for-the-badge&logo=typescript" />
+  <img src="https://img.shields.io/badge/Status-MVP-orange?style=for-the-badge" />
+</p>
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🧠 Overview
+
+**AgentFlow OS** is a scalable multi-agent orchestration middleware designed to manage AI agents collaboratively with governance, execution tracing, and workflow lifecycle control.
+
+This MVP demonstrates:
+
+- Multi-agent workflow orchestration  
+- Execution lifecycle tracking  
+- Immutable trace timeline  
+- Supabase-backed persistence + realtime  
+- Human-readable workflow visualization  
+
+👉 Goal: evolve into a **production-grade enterprise agent operating system**.
+
+---
+
+## ✨ Core Features
+
+### ⚙️ Workflow Orchestration
+- Define workflows with multiple agents
+- Automatic execution engine
+- Status lifecycle: `pending → running → completed`
+
+### 🧾 Execution Trace Timeline
+- Immutable event log per workflow
+- Ordered execution history
+- Real-time UI updates via Supabase
+
+### 🏛 Governance Layer
+- Controlled execution start logic
+- Deterministic workflow state transitions
+- Prevents duplicate or conflicting runs
+
+### 🔄 Realtime Sync
+- Supabase realtime subscriptions
+- Live workflow & trace updates in UI
+- Reactive timeline rendering
+
+---
+
+## 🏗 Architecture
+```
+Frontend (Next.js App Router)
+│
+│ UI actions
+▼
+Workflow Engine (Server Logic)
+│
+│ writes traces + status
+▼
+Supabase Database
+• workflows
+• workflow_traces
+│
+▼
+Realtime Subscriptions → Timeline UI 
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📂 Project Structure
+```
+agentflow-os-mvp/
+│
+├── public/ # Static assets
+├── src/
+│ ├── app/ # Next.js App Router pages
+│ │ ├── workflows/ # Workflow pages & dynamic routes
+│ │ └── api/ # API routes (execution, CRUD)
+│ │
+│ ├── components/ # UI components
+│ │ ├── timeline/ # Trace timeline UI
+│ │ ├── workflow/ # Workflow cards & controls
+│ │ └── layout/ # Layout & shared UI
+│ │
+│ ├── lib/ # Core logic
+│ │ ├── engine.ts # Workflow execution engine
+│ │ ├── supabase.ts # Supabase client
+│ │ └── types.ts # Shared types
+│ │
+│ └── styles/ # Global styles
+│
+├── package.json
+├── tsconfig.json
+└── next.config.ts
+```
+---
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🗄 Database Schema (Supabase)
 
-## Learn More
+### workflows
 
-To learn more about Next.js, take a look at the following resources:
+| column | type | description |
+|--------|------|-------------|
+id | uuid | workflow id |
+name | text | workflow name |
+status | text | pending/running/completed |
+created_at | timestamp | creation time |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### workflow_traces
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| column | type | description |
+|--------|------|-------------|
+id | uuid | trace id |
+workflow_id | uuid | parent workflow |
+event | text | execution event |
+created_at | timestamp | event time |
 
-## Deploy on Vercel
+---
+```
+## 🚀 Getting Started
+```
+```
+### 1️⃣ Clone repo
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+git clone https://github.com/ShivenduShivu/agentflow-os-mvp.git
+cd agentflow-os-mvp
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 2️⃣ Install dependencies
+npm install
+### 3️⃣ Configure environment
+
+- Create .env.local
+- NEXT_PUBLIC_SUPABASE_URL=your_url
+- NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+### 4️⃣ Run dev server
+- npm run dev
+
+- Open:
+
+- http://localhost:3000 
+```
+---
+```
+▶️ How Execution Works
+
+- User opens workflow page
+
+- Page checks workflow status
+
+- If pending → engine starts
+
+- Engine:
+
+- sets workflow → running
+
+- writes trace events
+
+- sets workflow → completed
+
+- Timeline subscribes to traces → live UI
+```
+```
+## 🧩 Key Design Decisions
+```
+- Execution triggered only once from route
+
+- No duplicate trace writes
+
+- Ordered by created_at
+
+- Realtime enabled on:
+
+- workflows
+
+- workflow_traces
+
+- Stateless UI, DB = source of truth
+```
+
