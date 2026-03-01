@@ -18,22 +18,35 @@ export default async function AuditPage() {
 
   const { data } = await supabase
     .from("audit_logs")
-    .select("id, action, created_at, workflow_id")
+    .select("id, action, created_at, workflow_id, user_id")
     .order("created_at", { ascending: false })
 
   return (
     <div className="space-y-4">
       <h1 className="text-xl font-semibold">Audit Logs</h1>
 
-      {data?.map((log) => (
-        <div key={log.id} className="border rounded p-3">
-          <div className="text-sm text-muted-foreground">
-            {new Date(log.created_at).toLocaleString()}
-          </div>
-          <div className="font-medium">{log.action}</div>
-          <div className="text-xs">Workflow: {log.workflow_id}</div>
-        </div>
-      ))}
+      <div className="overflow-x-auto">
+        <table className="w-full table-auto border-collapse">
+          <thead>
+            <tr className="text-left">
+              <th className="px-3 py-2 border-b">Action</th>
+              <th className="px-3 py-2 border-b">Workflow ID</th>
+              <th className="px-3 py-2 border-b">User</th>
+              <th className="px-3 py-2 border-b">Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.map((log) => (
+              <tr key={log.id} className="odd:bg-white even:bg-slate-50">
+                <td className="px-3 py-2 border-b">{log.action}</td>
+                <td className="px-3 py-2 border-b">{log.workflow_id}</td>
+                <td className="px-3 py-2 border-b text-sm text-gray-600">{log.user_id}</td>
+                <td className="px-3 py-2 border-b text-sm text-gray-600">{new Date(log.created_at).toLocaleString()}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

@@ -44,17 +44,17 @@ export default function DashboardLayout({
                         Actions
                     </Link>
 
-                    <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
+                    <Link href="/workflows" className="block p-2 rounded hover:bg-slate-100">
                         Workflows
-                    </div>
+                    </Link>
 
-                    <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
+                    <Link href="/approvals" className="block p-2 rounded hover:bg-slate-100">
                         Approvals
-                    </div>
+                    </Link>
 
-                    <div className="p-2 rounded hover:bg-slate-100 cursor-pointer">
+                    <Link href="/audit" className="block p-2 rounded hover:bg-slate-100">
                         Audit Logs
-                    </div>
+                    </Link>
                 </nav>
 
                 <Button
