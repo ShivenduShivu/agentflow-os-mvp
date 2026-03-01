@@ -86,7 +86,7 @@ export default function WorkflowDetailPage() {
         .from("workflows")
         .update({ status: "running" })
         .eq("id", workflowId)
-        .eq("status", "pending")
+        // remove status filter to avoid 406 if engine already changed it
         .select()
         .maybeSingle()
 
